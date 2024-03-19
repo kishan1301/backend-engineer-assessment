@@ -29,7 +29,7 @@ WORKDIR /opt/
 COPY build.gradle /opt/
 
 # Build and package the Java application
-RUN gradle build -x test
+RUN gradle build -x sonarLintMain -x sonaLintTest -x test
 
 # Stage 5: Deploy the Java application
 FROM adoptopenjdk/openjdk21:jre-21.0.0_3-alpine
@@ -43,4 +43,5 @@ COPY target/backend-engineer-assessment-0.0.1-SNAPSHOT.jar /opt/
 EXPOSE 8080
 
 # Run the Java application
-CMD ["java", "-jar", "/opt/backend-engineer-assessment-0.0.1-SNAPSHOT.jar"]
+#CMD ["java", "-jar", "/opt/backend-engineer-assessment-0.0.1-SNAPSHOT.jar"]
+RUN gradle bootRun
