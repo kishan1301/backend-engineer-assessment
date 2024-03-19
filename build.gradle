@@ -67,36 +67,36 @@ tasks.named('test') {
 }
 
 
-tasks.register('sonarlintListRules', SonarlintListRules) {
-    description = 'List sonarlint rules'
-    group = 'verification'
-}
+//tasks.register('sonarlintListRules', SonarlintListRules) {
+//    description = 'List sonarlint rules'
+//    group = 'verification'
+//}
 
-sonarlintMain {
-    source = fileTree("$layout.buildDirectory/src/main")
-    reports {
-        html {
-            enabled = true
-            outputLocation = layout.buildDirectory.file("/reports/sonarlint")
-        }
-        xml.enabled = true
-        sarif.enabled = false
-    }
-}
+//sonarlintMain {
+//    source = fileTree("$layout.buildDirectory/src/main")
+//    reports {
+//        html {
+//            enabled = true
+//            outputLocation = layout.buildDirectory.file("/reports/sonarlint")
+//        }
+//        xml.enabled = true
+//        sarif.enabled = false
+//    }
+//}
 
-sonarlint {
-    // excludeRules = ['java:S1186']
-    // includeRules = ['java:S1176', 'java:S1696', 'java:S4266']
-    ignoreFailures = false
-    maxIssues = 0 // default 0
-    // note that rule parameter names are case sensitive
-    // ruleParameters = [
-    //   'java:S1176' : [
-    //     'forClasses':'**.api.**',      // need javadoc for public methods in package matching 'api'
-    //     'exclusion': '**.private.**'] // do not need javadoc for classes under 'private'. Default is **.internal.**
-    // ]
-    showIssues = true // default true
-}
+//sonarlint {
+//    // excludeRules = ['java:S1186']
+//    // includeRules = ['java:S1176', 'java:S1696', 'java:S4266']
+//    ignoreFailures = true
+//    maxIssues = 0 // default 0
+//    // note that rule parameter names are case sensitive
+//    // ruleParameters = [
+//    //   'java:S1176' : [
+//    //     'forClasses':'**.api.**',      // need javadoc for public methods in package matching 'api'
+//    //     'exclusion': '**.private.**'] // do not need javadoc for classes under 'private'. Default is **.internal.**
+//    // ]
+//    showIssues = true // default true
+//}
 
 
 // Spotless Formatter Configuration
