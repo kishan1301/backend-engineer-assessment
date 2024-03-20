@@ -7,3 +7,40 @@ services:
       - 'POSTGRES_USER=myuser'
     ports:
       - '5432'
+    networks:
+      - my_network
+  temporal:
+    image: temporalio/auto-setup:1.13.1
+    environment:
+      - CASSANDRA_SEEDS=cassandra
+      - CASSANDRA_PORT=9042
+      - CASSANDRA_USER=user
+      - CASSANDRA_PASSWORD=password
+      - SERVICES=history,matching,frontend
+    ports:
+      - "7233:7233"
+      - "8088:8088"
+    depends_on:
+      - cassandra
+    networks:
+      - my_network
+
+  cassandra:
+    image: cassandra:latest
+    ports:
+      - "9042:9042"
+    networks:
+      - my_network
+
+  java-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - temporal
+      - postgres
+    networks:
+      - my_network
+
+networks:
+  my_network:
