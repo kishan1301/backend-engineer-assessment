@@ -1,47 +1,27 @@
-# Stage 1: Pull the Gradle image
+# Stage 1: Build the Java application
 FROM gradle:latest as gradle
 
-# Stage 2: Start Temporal service
-FROM temporalio/auto-setup:1.11.1 as temporal
-
-# Start the Temporal service
-CMD ["temporal", "server", "--root", "/etc/temporal", "--db", "cassandra", "start"]
-
-# Stage 3: Start PostgreSQL service
-FROM postgres:latest as postgres
-
-# Set up environment variables
-ENV POSTGRES_DB=mydatabase
-ENV POSTGRES_PASSWORD=secret
-ENV POSTGRES_USER=myuser
-
-# Expose the PostgreSQL port
-EXPOSE 5432
-
-# Start the PostgreSQL service
-CMD ["postgres"]
-
-# Stage 4: Build the Java application
-FROM gradle as builder
-
-WORKDIR /opt/
-
-COPY build.gradle /opt/
-
-# Build and package the Java application
-RUN gradle build -x sonarLintMain -x sonaLintTest -x test
+RUN gradle init
+RUN gradle build
 
 # Stage 5: Deploy the Java application
-FROM adoptopenjdk/openjdk21:jre-21.0.0_3-alpine
+FROM openjdk:21 AS java
+
+#ENV JVM_RESOURCES="-Xmx500m -Xms500m"
 
 # Copy the built JAR file from the previous stage
-#COPY --from=builder /app/build/libs/my-application.jar /app/my-application.jar
-
-COPY target/backend-engineer-assessment-0.0.1-SNAPSHOT.jar /opt/
-
+COPY build/libs/app-0.0.1-SNAPSHOT.jar /opt/
+#
+#COPY target/backend-engineer-assessment-0.0.1-SNAPSHOT.jar /opt/
+#
 # Expose the port
 EXPOSE 8080
-
+#
 # Run the Java application
-#CMD ["java", "-jar", "/opt/backend-engineer-assessment-0.0.1-SNAPSHOT.jar"]
-RUN gradle bootRun
+##CMD ["java", "-jar", "/opt/backend-engineer-assessment-0.0.1-SNAPSHOT.jar"]
+WORKDIR /opt/
+
+ADD https://github.com/vishnubob/wait-for-it/raw/master/wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chmod +x /usr/local/bin/wait-for-it
+
+CMD ["wait-for-it", "postgres:5432", "temporal:7233", "--", "java", "-jar", "/opt/app-0.0.1-SNAPSHOT.jar"]
